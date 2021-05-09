@@ -1,0 +1,7 @@
+{
+  "name": "Contento",
+  "id": "756377774750053259",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}
