@@ -16,27 +16,36 @@ const App = function() {
     
     onmessage = (event) => {
       switch (event.data.pluginMessage.type) {
+        
         case codeMessages.SET_SELECTION:
           setSelection(event.data.pluginMessage.selection);
           break;
+
         default:
           return;
       }
     }
 
   }, []);
-
-  const clearNode = function (i: number) {
-    console.log(`Clear ${i} text node`);
-    parent.postMessage({ pluginMessage: { type: uiMessages.CLEAR_TEXT, index: i }}, '*')
-  }
   
   return (<div className={`nodes-list`}>
 
-    { selection.map((node: INodePayload, i: number) => {
+    <h2 className={`title`}>Text Fields</h2>
+
+    { Object.keys(selection).map((id, i) => {
       return (
-        <div className={`text-node`} key={i} onClick={ () => clearNode(i) }>
-          {node.characters}
+        <div className={`text-node`} key={i}>
+          <input type="text" className="edit-form-text" 
+            value={selection[id].characters} onChange={(event) => {
+              
+              parent.postMessage({ pluginMessage: {
+                type: uiMessages.UPDATE_TEXT,
+                id, 
+                value: event.target.value 
+              } }, '*')
+
+            }} />
+          {/* {selection[id].characters} */}
         </div>
       );
     })}

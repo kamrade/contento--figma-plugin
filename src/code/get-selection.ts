@@ -5,26 +5,33 @@ export interface INodePayload {
   node: SceneNode
 };
 
+export interface INodeTransferObject {
+  [name: string]: INodePayload;
+};
+
 export type FilteringCallbackType = (node: INodePayload) => void;
 
 export type FilteringFunctionType = (node: SceneNode, callback: FilteringCallbackType ) => void;
 
-const selectedNodes: INodePayload[] = [];
+let selectedNodes: INodeTransferObject = {};
 
 export const getSelection = function getSelection(filteringFunction: FilteringFunctionType) {
 
-  selectedNodes.splice(0, selectedNodes.length);
+  selectedNodes = {};
 
-  const selectionNodes = figma.currentPage.selection;
+  const selection = figma.currentPage.selection;
 
   function traverse(node: SceneNode) {
 
     if (!('children' in node)) {
+      if (node.type === 'TEXT') {
+        filteringFunction(node, (node: INodePayload) => selectedNodes[node.id] = node);
+      }
       return [];
     }
 
     for (let j = 0; j < node.children.length; j++) {
-      filteringFunction(node.children[j], (node: INodePayload) => selectedNodes.push(node));
+      filteringFunction(node.children[j], (node: INodePayload) => selectedNodes[node.id] = node);
     }
 
     if (node.type !== 'COMPONENT' && node.type !== 'COMPONENT_SET') {
@@ -37,9 +44,9 @@ export const getSelection = function getSelection(filteringFunction: FilteringFu
 
   }
 
-  if (selectionNodes.length !== 0) {
-    for (let i = 0; i < selectionNodes.length; i++) {
-      traverse(selectionNodes[i]);
+  if (selection.length !== 0) {
+    for (let i = 0; i < selection.length; i++) {
+      traverse(selection[i]);
     }
   }
 
@@ -47,13 +54,14 @@ export const getSelection = function getSelection(filteringFunction: FilteringFu
 }
 
 export const filterTextFields: FilteringFunctionType = function (node: SceneNode, callback: FilteringCallbackType) {
-  if (node.type === 'TEXT') {
-
-    callback({
-      id: node.id,
-      name: node.name,
-      characters: node.characters,
-      node: node
-    });
+  if (node.type === 'TEXT') { 
+    callback( createNodeTransferObject(node) );
   }
 }
+
+export const createNodeTransferObject = (node: TextNode) => ({
+  id: node.id,
+  name: node.name,
+  characters: node.characters,
+  node: node
+});
