@@ -54,7 +54,7 @@ export const getSelection = function getSelection(filteringFunction: FilteringFu
 }
 
 export const filterTextFields: FilteringFunctionType = function (node: SceneNode, callback: FilteringCallbackType) {
-  if (node.type === 'TEXT') { 
+  if (node.type === 'TEXT') {
     callback( createNodeTransferObject(node) );
   }
 }

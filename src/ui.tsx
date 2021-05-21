@@ -13,10 +13,10 @@ const App = function() {
 
   useEffect(() => {
     console.log(':: Contento started v. 0.1.0');
-    
+
     onmessage = (event) => {
       switch (event.data.pluginMessage.type) {
-        
+
         case codeMessages.SET_SELECTION:
           setSelection(event.data.pluginMessage.selection);
           break;
@@ -27,7 +27,7 @@ const App = function() {
     }
 
   }, []);
-  
+
   return (<div className={`nodes-list`}>
 
     <h2 className={`title`}>Text Fields</h2>
@@ -35,13 +35,17 @@ const App = function() {
     { Object.keys(selection).map((id, i) => {
       return (
         <div className={`text-node`} key={i}>
-          <input type="text" className="edit-form-text" 
+
+          <input type="text" className="edit-form-text-name"
+            value={selection[id].name}/>
+
+          <input type="text" className="edit-form-text"
             value={selection[id].characters} onChange={(event) => {
-              
+
               parent.postMessage({ pluginMessage: {
                 type: uiMessages.UPDATE_TEXT,
-                id, 
-                value: event.target.value 
+                id,
+                value: event.target.value
               } }, '*')
 
             }} />
@@ -49,9 +53,9 @@ const App = function() {
         </div>
       );
     })}
-  
+
   </div>);
-  
+
 }
 
 ReactDOM.render(<App />, document.getElementById('react-page'));
